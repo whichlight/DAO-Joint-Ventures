@@ -33,8 +33,10 @@ contract JVProposal is IJVProposal {
 
   function canExecute() public view returns (bool) {
     for (uint256 i; i < daoTokenConfigs.length; i++) {
-      if (totalDeposits[daoTokenConfigs[i].tokenAddress] < daoTokenConfigs[i].depositTarget)
-      return false;
+      if (
+        totalDeposits[daoTokenConfigs[i].tokenAddress] <
+        daoTokenConfigs[i].depositTarget
+      ) return false;
     }
     return true;
   }

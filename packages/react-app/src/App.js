@@ -15,6 +15,7 @@ import logo from './ethereumLogo.png';
 import { addresses, abis } from '@my-app/contracts';
 import { DaoInfo } from './components/DaoInfo';
 import { NewTokenInfo } from './components/NewTokenInfo';
+import { Outlet } from 'react-router-dom';
 
 function WalletButton() {
   const [rendered, setRendered] = useState('');
@@ -54,24 +55,13 @@ function WalletButton() {
   );
 }
 
-function App() {
-  const [numDaos] = useState(2);
-  // Read more about useDapp on https://usedapp.io/
-  // const { error: contractCallError, value: tokenBalance } =
-  //   useCall({
-  //     contract: new Contract(addresses.ceaErc20, abis.erc20),
-  //     method: 'balanceOf',
-  //     args: ['0x3f8CB69d9c0ED01923F11c829BaE4D9a4CB6c82C'],
-  //   }) ?? {};
-
-  const daos = useMemo(() => [...new Array(numDaos)], [numDaos]);
-
+function App({ children }) {
   return (
     <div>
-      {daos.map((_, i) => (
-        <DaoInfo index={i} key={i} />
-      ))}
-      <NewTokenInfo />
+      <header>
+        Header <WalletButton />
+      </header>
+      {children}
     </div>
   );
 }

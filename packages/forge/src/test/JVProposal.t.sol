@@ -26,14 +26,15 @@ contract JVProposalFactoryTest is DSTest, Setup {
 
   function test_execute() public {
     IJVProposal proposal = _proposal();
-    _depositTargetAmounts();
-    proposal.execute();
+    _depositTargetAmounts(proposal);
+    address[3] memory deployedAddresses = proposal.execute();
+    assertEq(deployedAddresses[0], 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
   }
 
-  function _depositTargetAmounts() internal {
+
+  function _depositTargetAmounts(IJVProposal proposal) internal {
     IERC20 token0 = IERC20(address(tokens[0]));
     IERC20 token1 = IERC20(address(tokens[1]));
-    IJVProposal proposal = _proposal();
     vm.startPrank(alice);
     token0.approve(address(proposal), 100_000 ether);
     token1.approve(address(proposal), 100_000 ether);
@@ -49,6 +50,7 @@ contract JVProposalFactoryTest is DSTest, Setup {
     proposal.deposit(token, 100_000 ether);
 
     assertEq(proposal.userTokenDeposits(alice, token), 100_000 ether);
+    assertEq(proposal.totalDeposits(address(token)), 100_000 ether);
     assertEq(token.balanceOf(address(proposal)), 100_000 ether);
   }
 

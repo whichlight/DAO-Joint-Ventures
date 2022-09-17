@@ -4,7 +4,10 @@ pragma solidity ^0.8.15;
 import "./interfaces/IJVProposal.sol";
 import "./interfaces/IJVProposalFactory.sol";
 import "./interfaces/ISetTokenCreator.sol";
+import "./interfaces/IBasicIssuanceModule.sol";
 import "./interfaces/IERC20.sol";
+
+import { console } from "./test/utils/Console.sol";
 
 address constant SET_CREATOR = 0xeF72D3278dC3Eba6Dc2614965308d1435FFd748a;
 address constant SET_BASIC_ISSUANCE_MODULE = 0xd8EF3cACe8b4907117a45B0b125c68560532F94D;
@@ -14,7 +17,7 @@ contract JVProposal is IJVProposal {
   mapping(address => mapping(IERC20 => uint256))
     public
     override userTokenDeposits;
-  mapping(address => uint256) public totalDeposits;
+  mapping(address => uint256) public override totalDeposits;
   address[] public deployedPools;
   IJVProposalFactory.DaoConfig[] public daoTokenConfigs;
   IJVProposalFactory.JVTokenConfig public jvTokenConfig;
@@ -38,12 +41,29 @@ contract JVProposal is IJVProposal {
     }
   }
 
-  function execute() external {
+  function execute() external override returns (address[3] memory) {
     require(canExecute(), "deposit targets not reached");
-    _createToken();
+    address _jvToken = _createToken();
+    // issue jvToken units
+    // deposit to uniswap
+    // transfer LP tokens to DAO treasury
+    // transfer jvTokens to DAO treasury
+
+    return [_jvToken, _jvToken, _jvToken];
   }
 
-  function _createToken() internal returns (IERC20) {
+  function _mint() internal {
+    for (uint256 i; i < daoTokenConfigs.length; i++ ) {
+
+    }
+    IBasicIssuanceModule(SET_BASIC_ISSUANCE_MODULE).issue(
+      ISetToken(address(jvToken)),
+      100_000 ether,
+      address(this)
+    );
+  }
+
+  function _createToken() internal returns (address) {
     int256[] memory quantitiesPerUnit = jvTokenConfig.quantitiesPerUnit;
 
     address newToken = ISetTokenCreator(SET_CREATOR).create(
@@ -56,7 +76,7 @@ contract JVProposal is IJVProposal {
     );
 
     jvToken = IERC20(address(newToken));
-    return jvToken;
+    return address(jvToken);
   }
 
   function canExecute() public view returns (bool) {
@@ -64,7 +84,15 @@ contract JVProposal is IJVProposal {
       if (
         totalDeposits[daoTokenConfigs[i].tokenAddress] <
         daoTokenConfigs[i].tokenDepositTarget
-      ) return false;
+      ) {
+        console.log(
+          "total deposits",
+          totalDeposits[daoTokenConfigs[i].tokenAddress]
+        );
+        console.log("token address", daoTokenConfigs[i].tokenAddress);
+        console.log("deposit target", daoTokenConfigs[i].tokenDepositTarget);
+        return false;
+      }
     }
     return true;
   }
@@ -74,7 +102,7 @@ contract JVProposal is IJVProposal {
     totalDeposits[address(token)] += amount;
     userTokenDeposits[msg.sender][token] += amount;
     token.transferFrom(msg.sender, address(this), amount);
-    emit Deposit(msg.sender, amount);
+    emit Deposit(msg.sender, amount, address(token));
   }
 
   function withdraw(IERC20 token, uint256 amount) external {
@@ -87,7 +115,7 @@ contract JVProposal is IJVProposal {
     totalDeposits[address(token)] -= amount;
     userTokenDeposits[msg.sender][token] -= amount;
     token.transfer(msg.sender, amount);
-    emit Withdraw(msg.sender, amount);
+    emit Withdraw(msg.sender, amount, address(token));
   }
 
   function _validToken(IERC20 token) internal returns (bool) {

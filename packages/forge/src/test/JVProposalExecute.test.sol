@@ -16,6 +16,7 @@ contract JVProposalExecuteTest is DSTest {
     IJVProposalFactory.JVTokenConfig internal jvTokenConfig;
     IJVProposalFactory.DaoConfig[] internal daoConfigs;
   
+    address constant SET_BASIC_ISSUANCE_MODULE = 0xd8EF3cACe8b4907117a45B0b125c68560532F94D;
     address constant SET_CREATOR = 0xeF72D3278dC3Eba6Dc2614965308d1435FFd748a;
 
     function setUp() public {
@@ -29,17 +30,25 @@ contract JVProposalExecuteTest is DSTest {
         address barDaoTreasury = users[1];
         address fooDaoToken = users[2];
         address barDaoToken = users[3];
+        
+        address[] memory basicIssuance = new address[](1);
+        basicIssuance[0] = 0xd8EF3cACe8b4907117a45B0b125c68560532F94D;
+        
+        uint256[] memory unitquants = new uint256[](2);
+        unitquants[0] = 2;
+        unitquants[1] = 1;
+        jvTokenConfig.quantitiesPerUnit = unitquants;
 
         // create new token
         address newTokenAddr = SetTokenCreator(SET_CREATOR).create(
-            _components, // components
-            _units, //[2, 1], // units
-            _modules, // [0xeF72D3278dC3Eba6Dc2614965308d1435FFd748a], // modules
+            jvTokenConfig.components,
+            jvTokenConfig.quantitiesPerUnit, //[2, 1],
+            basicIssuance,
             address(this), // manager
-            _name,
-            _symbol
+            "SETTOKEN",
+            "SET"
         );
 
-        assertEq(0, newTokenAddr);
+        assertEq(address(0), newTokenAddr);
     }
 }

@@ -24,6 +24,23 @@ contract JVProposalFactoryTest is DSTest, Setup {
     assertEq(_proposal().feeTier(), 3000);
   }
 
+  function test_execute() public {
+    IJVProposal proposal = _proposal();
+    _depositTargetAmounts();
+    proposal.execute();
+  }
+
+  function _depositTargetAmounts() internal {
+    IERC20 token0 = IERC20(address(tokens[0]));
+    IERC20 token1 = IERC20(address(tokens[1]));
+    IJVProposal proposal = _proposal();
+    vm.startPrank(alice);
+    token0.approve(address(proposal), 100_000 ether);
+    token1.approve(address(proposal), 100_000 ether);
+    proposal.deposit(token0, 100_000 ether);
+    proposal.deposit(token1, 100_000 ether);
+  }
+
   function test_deposit() public {
     IERC20 token = IERC20(address(tokens[0]));
     IJVProposal proposal = _proposal();
@@ -32,6 +49,7 @@ contract JVProposalFactoryTest is DSTest, Setup {
     proposal.deposit(token, 100_000 ether);
 
     assertEq(proposal.userTokenDeposits(alice, token), 100_000 ether);
+    assertEq(token.balanceOf(address(proposal)), 100_000 ether);
   }
 
   function test_withdraw() public {
@@ -45,5 +63,4 @@ contract JVProposalFactoryTest is DSTest, Setup {
     assertEq(proposal.userTokenDeposits(alice, token), 0);
   }
 
-  function test_create_proposal() public {}
 }

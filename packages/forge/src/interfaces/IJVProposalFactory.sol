@@ -16,7 +16,7 @@ interface IJVProposalFactory {
     string name;
     string symbol;
     address[] components;
-    uint256[] quantitiesPerUnit;
+    int256[] quantitiesPerUnit;
   }
   struct PoolConfig {
     uint256 feeTier;

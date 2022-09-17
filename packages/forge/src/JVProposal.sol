@@ -3,6 +3,7 @@ pragma solidity ^0.8.15;
 
 import "./interfaces/IJVProposal.sol";
 import "./interfaces/IJVProposalFactory.sol";
+import "./interfaces/ISetTokenCreator.sol";
 import "./interfaces/IERC20.sol";
 
 address constant SET_CREATOR = 0xeF72D3278dC3Eba6Dc2614965308d1435FFd748a;
@@ -18,6 +19,8 @@ contract JVProposal is IJVProposal {
   IJVProposalFactory.DaoConfig[] public daoTokenConfigs;
   IJVProposalFactory.JVTokenConfig public jvTokenConfig;
   uint256 public feeTier;
+  address[] modules;
+  IERC20 public jvToken;
 
   constructor(
     IJVProposalFactory.DaoConfig[] memory _daoTokenConfigs,
@@ -29,10 +32,31 @@ contract JVProposal is IJVProposal {
     }
     jvTokenConfig = _jvTokenConfig;
     feeTier = _feeTier;
+
+    for (uint256 i; i < 1; i++) {
+      modules.push(SET_BASIC_ISSUANCE_MODULE);
+    }
   }
 
   function execute() external {
     require(canExecute(), "deposit targets not reached");
+    _createToken();
+  }
+
+  function _createToken() internal returns (IERC20) {
+    int256[] memory quantitiesPerUnit = jvTokenConfig.quantitiesPerUnit;
+
+    address newToken = ISetTokenCreator(SET_CREATOR).create(
+      jvTokenConfig.components,
+      quantitiesPerUnit,
+      modules,
+      address(this), // manager
+      jvTokenConfig.name,
+      jvTokenConfig.symbol
+    );
+
+    jvToken = IERC20(address(newToken));
+    return jvToken;
   }
 
   function canExecute() public view returns (bool) {

@@ -3,13 +3,11 @@ pragma solidity ^0.8.7;
 
 import "./ERC20.sol";
 
-interface UniswapV3PoolDeployer {
+interface UniswapV3Factory {
     function deploy(
-        address factory,
-        address token0,
-        address token1,
-        uint24 fee,
-        int24 tickSpacing
+        address tokenA,
+        address tokenB,
+        uint24 fee
   ) external returns (address pool);
 }
 interface Pool {
@@ -124,8 +122,8 @@ contract JVDaoIF {
         ERC20(newTokenAddr).transfer(dao1, tokenSupply * (1-split));
 
         // create liquidity pool
-        address poolAddr0 = UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd0, newTokenAddr, 3, 3);
-        address poolAddr1 = UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd1, newTokenAddr, 3, 3);
+        address poolAddr0 =  UniswapV3Factory(0x1F98431c8aD98523631AE4a59f267346ea31F984).deploy(newTokenAddr, tokenAdd0, 3);
+        address poolAddr1 = UniswapV3Factory(0x1F98431c8aD98523631AE4a59f267346ea31F984).deploy(newTokenAddr, tokenAdd1, 3);
 
         // provide liquidity
         // get the pool somehow

@@ -4,6 +4,16 @@ export const DepositTokens = ({ props }) => {
   const { proposalId } = useParams();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+      <div>
+        <ol>
+          <li>Specify collaboration terms to deploy joint contract for DAOs</li>
+          <li>Approve and sign terms from DAOs</li>
+          <li>Mint your new joint tokens</li>
+        </ol>
+      </div>
+      <div
+        style={{ backgroundColor: "black", width: "100%", height: "0.1rem" }}
+      ></div>
       <h2>Venture Overview</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <div>
@@ -86,6 +96,15 @@ export const DepositTokens = ({ props }) => {
 
         <div style={{ width: "5rem" }}>
           <button>Withdraw</button>
+        </div>
+      </div>
+      <div style={{ backgroundColor: "#BBFFB0", padding: "1rem" }}>
+        <div style={{ fontSize: "1.5rem" }}>
+          Congratulations! Deposits complete.
+        </div>
+        <div style={{ marginTop: "1rem" }}>
+          [# to DAO1] tokens have been issued to DAO1, and [# to DAO2] have been
+          issued to DAO2.
         </div>
       </div>
     </div>

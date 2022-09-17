@@ -1,7 +1,7 @@
 var MockERC20 = artifacts.require("/Users/shakezula/dev/jointdao/contracts/ERC20Mock.sol");
-var JVDAOFactory = artifacts.require("/Users/shakezula/dev/jointdao/contracts/JVDaoIF.sol");
+var JVDAOFactory = artifacts.require("/Users/shakezula/dev/jointdao/contracts/JVDAOFactory.sol");
 
-contract('JVDaoIF', (accounts) => {
+contract('JVDAOFactory', (accounts) => {
     var creatorAddress = accounts[0];
     var firstOwnerAddress = accounts[1];
     var secondOwnerAddress = accounts[2];

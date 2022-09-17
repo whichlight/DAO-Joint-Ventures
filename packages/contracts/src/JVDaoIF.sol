@@ -17,7 +17,6 @@ contract JVDaoIF {
     string public tokenSymbol;
     uint256 public tokenSupply;
 
-
     constructor(
         address _dao0,
         uint256 _nTokens0,
@@ -27,7 +26,6 @@ contract JVDaoIF {
         address _tokenAdd1,
         address _tokenAdd0,
         uint256 _split,
-
         string memory _tokenName,
         string memory _tokenSymbol,
         uint256 _tokenSupply
@@ -44,14 +42,16 @@ contract JVDaoIF {
         tokenName = _tokenName;
         tokenSymbol = _tokenSymbol;
         tokenSupply = _tokenSupply;
-        
     }
 
-    function createToken(string memory _name, string memory _symbol,uint _supply) public returns(address){
+    function createToken(
+        string memory _name,
+        string memory _symbol,
+        uint256 _supply
+    ) public returns (address) {
         ERC20 newToken = new ERC20(_name, _symbol, _supply);
         return address(newToken);
-  }
-
+    }
 
     function mint() public {
         // burn the tokens
@@ -63,7 +63,6 @@ contract JVDaoIF {
 
         // do the split
         ERC20(newTokenAddr).transfer(dao0, tokenSupply * split);
-        ERC20(newTokenAddr).transfer(dao1, tokenSupply * (1-split));
+        ERC20(newTokenAddr).transfer(dao1, tokenSupply * (1 - split));
     }
 }
-

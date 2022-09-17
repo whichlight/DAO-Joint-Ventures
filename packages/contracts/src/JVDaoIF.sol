@@ -45,7 +45,6 @@ contract JVDaoIF {
     string public tokenSymbol;
     uint256 public tokenSupply;
 
-
     constructor(
         address _dao0,
         uint256 _nTokens0,
@@ -55,7 +54,6 @@ contract JVDaoIF {
         address _tokenAdd1,
         address _tokenAdd0,
         uint256 _split,
-
         string memory _tokenName,
         string memory _tokenSymbol,
         uint256 _tokenSupply
@@ -72,7 +70,6 @@ contract JVDaoIF {
         tokenName = _tokenName;
         tokenSymbol = _tokenSymbol;
         tokenSupply = _tokenSupply;
-        
     }
 
     function createToken(
@@ -144,4 +141,3 @@ contract JVDaoIF {
         );
     }
 }
-

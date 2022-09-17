@@ -2,14 +2,5 @@
 pragma solidity ^0.8.15;
 
 interface IJVProposal {
-  struct DaoTokenConfig {  
-    uint256 index;  
-    uint256 depositTarget;
-    address tokenAddress;
-  }
-  struct JVTokenConfig {  
-    uint256 index;
-    address[] components;
-    address[] quantitiesPerUnit;
-  }
+  function feeTier() external returns (uint256);
 }

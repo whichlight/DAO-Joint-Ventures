@@ -10,12 +10,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
 
 import { Body, Button, Container, Header, Image, Link } from './components';
-import logo from './ethereumLogo.png';
-
-import { addresses, abis } from '@my-app/contracts';
-import { DaoInfo } from './components/DaoInfo';
-import { NewTokenInfo } from './components/NewTokenInfo';
-import { Outlet } from 'react-router-dom';
 
 function WalletButton() {
   const [rendered, setRendered] = useState('');

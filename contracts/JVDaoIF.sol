@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.0;
 
 import "./ERC20.sol";
 
@@ -70,7 +70,6 @@ contract JVDaoIF {
         ERC20 newToken = new ERC20(_name, _symbol);
         return address(newToken);
   }
-
 
     function mint() public {
         // burn the tokens

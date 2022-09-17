@@ -20,6 +20,11 @@ contract JVProposalFactoryTest is DSTest, Setup {
     return proposal;
   }
 
+  function test_construction() public {
+    IJVProposal proposal = _proposal();
+    assertEq(address(proposal), 0xf5a2fE45F4f1308502b1C136b9EF8af136141382);
+  }
+
   function test_fee_tier() public {
     assertEq(_proposal().feeTier(), 3000);
   }
@@ -28,6 +33,8 @@ contract JVProposalFactoryTest is DSTest, Setup {
     IJVProposal proposal = _proposal();
     _depositTargetAmounts(proposal);
     address[3] memory deployedAddresses = proposal.execute();
+    vm.label(deployedAddresses[0], 'jvToken');
+    assertEq(IERC20(deployedAddresses[0]).balanceOf(address(proposal)), 100_000 ether);
     assertEq(deployedAddresses[0], 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
   }
 

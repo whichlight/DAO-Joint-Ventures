@@ -32,30 +32,30 @@ contract JVProposal is IJVProposal {
   ) {
     for (uint256 i; i < _daoTokenConfigs.length; i++) {
       daoTokenConfigs.push(_daoTokenConfigs[i]);
+      IERC20(_daoTokenConfigs[i].tokenAddress).approve(
+        SET_BASIC_ISSUANCE_MODULE,
+        type(uint256).max
+      );
+      if (i == 0 ) modules.push(SET_BASIC_ISSUANCE_MODULE);
     }
     jvTokenConfig = _jvTokenConfig;
     feeTier = _feeTier;
-
-    for (uint256 i; i < 1; i++) {
-      modules.push(SET_BASIC_ISSUANCE_MODULE);
-    }
   }
 
   function execute() external override returns (address[3] memory) {
     require(canExecute(), "deposit targets not reached");
     address _jvToken = _createToken();
+    _mint();
+    
     // issue jvToken units
     // deposit to uniswap
     // transfer LP tokens to DAO treasury
     // transfer jvTokens to DAO treasury
 
-    return [_jvToken, _jvToken, _jvToken];
+    return [_jvToken, address(0), address(0)];
   }
 
   function _mint() internal {
-    for (uint256 i; i < daoTokenConfigs.length; i++ ) {
-
-    }
     IBasicIssuanceModule(SET_BASIC_ISSUANCE_MODULE).issue(
       ISetToken(address(jvToken)),
       100_000 ether,
@@ -66,16 +66,24 @@ contract JVProposal is IJVProposal {
   function _createToken() internal returns (address) {
     int256[] memory quantitiesPerUnit = jvTokenConfig.quantitiesPerUnit;
 
-    address newToken = ISetTokenCreator(SET_CREATOR).create(
-      jvTokenConfig.components,
-      quantitiesPerUnit,
-      modules,
-      address(this), // manager
-      jvTokenConfig.name,
-      jvTokenConfig.symbol
+    jvToken = IERC20(
+      address(
+        ISetTokenCreator(SET_CREATOR).create(
+          jvTokenConfig.components,
+          quantitiesPerUnit,
+          modules,
+          address(this), // manager
+          jvTokenConfig.name,
+          jvTokenConfig.symbol
+        )
+      )
     );
 
-    jvToken = IERC20(address(newToken));
+    IBasicIssuanceModule(SET_BASIC_ISSUANCE_MODULE).initialize(
+      address(jvToken),
+      address(0)
+    );
+
     return address(jvToken);
   }
 

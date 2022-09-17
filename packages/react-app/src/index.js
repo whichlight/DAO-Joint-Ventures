@@ -1,6 +1,7 @@
+import 'antd/dist/antd.css';
 import './index.css';
 
-import { DAppProvider, Mainnet, Goerli, useEthers } from '@usedapp/core';
+import { DAppProvider, Mainnet, Goerli } from '@usedapp/core';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';

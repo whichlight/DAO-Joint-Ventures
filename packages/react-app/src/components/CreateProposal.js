@@ -1,4 +1,5 @@
-import { Contract, ContractFactory } from '@ethersproject/contracts';
+import { Button } from 'antd';
+import { ContractFactory } from '@ethersproject/contracts';
 import { useEthers } from '@usedapp/core';
 
 import { useDaoInfo, useNewTokenInfo } from '../hooks/infoHooks';
@@ -7,11 +8,11 @@ import { NewTokenInfo } from './NewTokenInfo';
 
 import { abi } from '../contracts/abi';
 import { bytecode } from '../contracts/bytecode';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export const CreateProposal = () => {
   const [contractAddress, setContractAddress] = useState('');
-  const { activate, library } = useEthers();
+  const { library } = useEthers();
 
   // useEffect(() => activate(), [activate]);
 
@@ -63,9 +64,9 @@ export const CreateProposal = () => {
       <NewTokenInfo tokenInfo={tokenInfo} />
 
       {!contractAddress ? (
-        <button disabled={!isValid} onClick={deploy}>
+        <Button disabled={!isValid} onClick={deploy}>
           Deploy
-        </button>
+        </Button>
       ) : (
         <div>Deployed!: {contractAddress}</div>
       )}

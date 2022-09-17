@@ -57,6 +57,37 @@ export const DepositTokens = ({ props }) => {
           </table>
         </div>
       </div>
+      <div
+        style={{
+          width: "30rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+        }}
+      >
+        <div>
+          You currently have xyz deposited. You can deposit or widthdraw.
+        </div>
+        <input
+          max={100}
+          min={0}
+          // onChange={handleSplit1Change}
+          // value={split1}
+        />
+        <div style={{ width: "5rem" }}>
+          <button>Deposit</button>
+        </div>
+        <input
+          max={100}
+          min={0}
+          // onChange={handleSplit1Change}
+          // value={split1}
+        />
+
+        <div style={{ width: "5rem" }}>
+          <button>Withdraw</button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -65,4 +65,6 @@ contract JVProposalFactoryTest is DSTest, Setup {
     assertEq(proposal.userTokenDeposits(alice, token), 0);
   }
 
+  function test_uniswap() public {
+  }
 }

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.15;
 import "./interfaces/IJVProposalFactory.sol";
 import "./interfaces/IJVProposal.sol";
+import "./JVProposal.sol";
 
 contract JVProposalFactory is IJVProposalFactory {
   function createProposal(
@@ -12,6 +13,7 @@ contract JVProposalFactory is IJVProposalFactory {
     _daoConfigs;
     _jvTokenConfig;
     _feeTier;
-    return IJVProposal(0x0000000000000000000000000000000000000000);
+    JVProposal jv = new JVProposal(_daoConfigs, _jvTokenConfig, _feeTier);
+    return jv;
   }
 }

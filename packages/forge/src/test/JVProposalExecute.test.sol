@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DSTest } from "ds-test/test.sol";
+import {ISetTokenCreator} from "../interfaces/ISetTokenCreator.sol";
 import { Utilities } from "./utils/Utilities.sol";
 import { console } from "./utils/Console.sol";
 import { Vm } from "forge-std/Vm.sol";
@@ -40,7 +41,7 @@ contract JVProposalExecuteTest is DSTest {
         jvTokenConfig.quantitiesPerUnit = unitquants;
 
         // create new token
-        address newTokenAddr = SetTokenCreator(SET_CREATOR).create(
+        address newTokenAddr = ISetTokenCreator(SET_CREATOR).create(
             jvTokenConfig.components,
             jvTokenConfig.quantitiesPerUnit, //[2, 1],
             basicIssuance,

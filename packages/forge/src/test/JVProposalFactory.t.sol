@@ -28,8 +28,9 @@ contract JVProposalFactoryTest is DSTest {
     //tokens.push(new MockERC20("FooDAO", "FOO", 18));
     // create mock tokens
   }
+}
 
-contract JVProposalFactoryTest is DSTest, Setup {
+contract JVProposalCreateTest is DSTest, Setup {
   function test_create_proposal() public {
     IJVProposalFactory factory = new JVProposalFactory();
     uint256 feeTier = 3000;

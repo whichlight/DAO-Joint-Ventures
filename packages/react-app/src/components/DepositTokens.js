@@ -22,6 +22,41 @@ export const DepositTokens = ({ props }) => {
           DAO2 treasury, and [DAO2 % to liquidity pool] to the liquidity pool.
         </div>
       </div>
+      <h2>Funds Deposit and Approval</h2>
+      <div style={{ display: "flex", flexDirection: "row", gap: "1.5rem" }}>
+        <div>
+          <table>
+            <tr>
+              <th></th>
+              <th>Token Target</th>
+            </tr>
+            <tr>
+              <td>FoodDAO</td>
+              <td>BarDAO</td>
+            </tr>
+            <tr>
+              <td>100,000.00 FOO</td>
+              <td>60,000.00 BAR</td>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <table>
+            <tr>
+              <th></th>
+              <th>Token Target</th>
+            </tr>
+            <tr>
+              <td>FoodDAO</td>
+              <td>BarDAO</td>
+            </tr>
+            <tr>
+              <td>100,000.00 FOO</td>
+              <td>60,000.00 BAR</td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

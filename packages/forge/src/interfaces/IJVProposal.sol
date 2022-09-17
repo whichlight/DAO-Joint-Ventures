@@ -4,7 +4,7 @@ pragma solidity ^0.8.15;
 interface IJVProposal {
   struct DaoTokenConfig {  
     uint256 index;  
-    uint256 depositThreshold;
+    uint256 depositTarget;
     address tokenAddress;
   }
   struct JVTokenConfig {  

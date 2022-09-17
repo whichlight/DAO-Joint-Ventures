@@ -10,6 +10,7 @@ contract JVProposal is IJVProposal {
   address constant UNISWAP_FACTORY = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
 
   mapping(address => mapping(address => uint256)) userTokenDeposits;
+  mapping(address => uint256) totalDeposits;
 
   address[] public deployedPools;
 
@@ -26,7 +27,17 @@ contract JVProposal is IJVProposal {
     jvTokenConfig = _jvTokenConfig;
   }
 
-  function execute() external {}
+  function execute() external {
+    require(canExecute(), "deposit targets not reached");
+  }
+
+  function canExecute() public view returns (bool) {
+    for (uint256 i; i < daoTokenConfigs.length; i++) {
+      if (totalDeposits[daoTokenConfigs[i].tokenAddress] < daoTokenConfigs[i].depositTarget)
+      return false;
+    }
+    return true;
+  }
 
   function deposit() external {}
 

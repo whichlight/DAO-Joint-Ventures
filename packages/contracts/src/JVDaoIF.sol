@@ -4,11 +4,22 @@ pragma solidity ^0.8.7;
 import "./ERC20.sol";
 
 interface UniswapV3PoolDeployer {
-    function deploy(address factory, 
-        address token0, 
-        address token1, 
-        uint24 fee, 
-        int24 tickSpacing) external  returns (bool success);
+    function deploy(
+        address factory,
+        address token0,
+        address token1,
+        uint24 fee,
+        int24 tickSpacing
+  ) external returns (address pool);
+}
+interface Pool {
+    function mint(
+    address recipient,
+    int24 tickLower,
+    int24 tickUpper,
+    uint128 amount,
+    bytes memory data
+  ) external returns (uint256 amount0, uint256 amount1);
 }
 
 contract JVDaoIF {
@@ -74,10 +85,26 @@ contract JVDaoIF {
         ERC20(newTokenAddr).transfer(dao1, tokenSupply * (1-split));
 
         // create liquidity pool
-        UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd0, newTokenAddr, 3, 3);
-        UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd1, newTokenAddr, 3, 3);
+        address poolAddr0 = UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd0, newTokenAddr, 3, 3);
+        address poolAddr1 = UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd1, newTokenAddr, 3, 3);
 
         // provide liquidity
-        exchange.methods.addLiquidity(min_liquidity, max_tokens, deadline).send({ value: ethAmount });
+        // get the pool somehow
+        Pool(poolAddr0).mint(
+            dao0,
+            3, // tickLower
+            3, // tickUpper
+            (uint128) (tokenSupply * split), // amount
+            "" // data
+        );
+
+        Pool(poolAddr1).mint(
+            dao0,
+            3, // tickLower
+            3, // tickUpper
+            (uint128) (tokenSupply * (1-split)), // amount
+            "" // data
+        );
     }
 }
+

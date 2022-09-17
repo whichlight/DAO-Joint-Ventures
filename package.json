@@ -20,6 +20,9 @@
       "packages/*"
     ]
   },
-  "devDependencies": {
+
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.7.3"
+
   }
 }

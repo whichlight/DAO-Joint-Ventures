@@ -14,8 +14,6 @@ export const CreateProposal = () => {
   const [contractAddress, setContractAddress] = useState('');
   const { library } = useEthers();
 
-  // useEffect(() => activate(), [activate]);
-
   const daoInfo1 = useDaoInfo();
   const daoInfo2 = useDaoInfo();
   const tokenInfo = useNewTokenInfo();

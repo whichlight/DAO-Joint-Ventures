@@ -23,10 +23,6 @@ export const useDaoInfo = () => {
     setTokenAddress(value);
   }, []);
 
-  const handleNumTokensChange = useCallback(({ target: { value } }) => {
-    setNumTokens(value);
-  }, []);
-
   const { split1, split2, handleSplit1Change, handleSplit2Change } = useSplit();
 
   return {
@@ -34,7 +30,7 @@ export const useDaoInfo = () => {
     daoName,
     handleDaoAddressChange,
     handleDaoNameChange,
-    handleNumTokensChange,
+    setNumTokens,
     handleSplit1Change,
     handleSplit2Change,
     handleTokenAddressChange,

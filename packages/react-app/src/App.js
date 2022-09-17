@@ -1,8 +1,10 @@
-import { Button } from 'antd';
+import { Button, Layout, Col, Row } from 'antd';
 import { shortenAddress, useEthers, useLookupAddress } from '@usedapp/core';
 import React, { useEffect, useState } from 'react';
 
 import './App.css';
+
+const { Header, Content } = Layout;
 
 function WalletButton() {
   const [rendered, setRendered] = useState('');
@@ -45,10 +47,14 @@ function WalletButton() {
 function App({ children }) {
   return (
     <div>
-      <header>
-        Header <WalletButton />
-      </header>
-      {children}
+      <Header>
+        <Col span={24}>
+          <Row align="middle" justify="space-between">
+            Header <WalletButton />
+          </Row>
+        </Col>
+      </Header>
+      <Content style={{ padding: '64px' }}>{children}</Content>
     </div>
   );
 }

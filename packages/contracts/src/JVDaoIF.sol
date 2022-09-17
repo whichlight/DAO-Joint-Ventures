@@ -3,6 +3,8 @@ pragma solidity ^0.8.15;
 
 import "./ERC20.sol";
 
+interface ISetToken {}
+
 interface UniswapV3Factory {
     function deploy(
         address tokenA,
@@ -28,6 +30,13 @@ interface SetTokenCreator {
         address _manager,
         string memory _name,
         string memory _symbol
+  ) external returns (address);
+}
+interface BasicIssuanceModule {
+    function issue(
+      ISetToken _setToken, 
+      uint256 _quantity,
+      address _to
   ) external returns (address);
 }
 
@@ -109,10 +118,13 @@ contract JVDaoIF {
         vv.push(1);
         vv.push(2);
        
-        dd.push(address(this));
+        dd.push(0xd8EF3cACe8b4907117a45B0b125c68560532F94D);
 
         // create new token
         address newTokenAddr = createToken(tokenName, tokenSymbol, 999999, hh, vv, dd);
+
+        BasicIssuanceModule(0xd8EF3cACe8b4907117a45B0b125c68560532F94D).issue(ISetToken(newTokenAddr), tokenSupply * split, dao0);
+        BasicIssuanceModule(0xd8EF3cACe8b4907117a45B0b125c68560532F94D).issue(ISetToken(newTokenAddr), tokenSupply * (1-split), dao1);
 
         // do the split
         ERC20(newTokenAddr).transfer(dao0, tokenSupply * split);

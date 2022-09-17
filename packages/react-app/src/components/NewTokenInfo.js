@@ -1,13 +1,14 @@
-import { Form, Input } from 'antd';
+import { Form, Input, InputNumber, Typography } from 'antd';
+
+const { Title } = Typography;
 
 export const NewTokenInfo = ({ tokenInfo }) => (
   <div>
-    <h3>New Token</h3>
+    <Title level={3}>New Token</Title>
     <Form>
       <label>
         Token Name
         <Input
-          type="text"
           value={tokenInfo.tokenName}
           onChange={tokenInfo.handleTokenNameChange}
         />
@@ -15,16 +16,13 @@ export const NewTokenInfo = ({ tokenInfo }) => (
       <label>
         Token Symbol
         <Input
-          type="text"
           value={tokenInfo.tokenSymbol}
           onChange={tokenInfo.handleTokenSymbolChange}
         />
       </label>
-
       <label>
-        % issued to Dao 1
-        <Input
-          type="number"
+        % issued to Dao 1{' '}
+        <InputNumber
           min={0}
           max={100}
           onChange={tokenInfo.handleSplit1Change}
@@ -32,9 +30,8 @@ export const NewTokenInfo = ({ tokenInfo }) => (
         />
       </label>
       <label>
-        % issued to Dao 2
-        <Input
-          type="number"
+        % issued to Dao 2{' '}
+        <InputNumber
           min={0}
           max={100}
           onChange={tokenInfo.handleSplit2Change}

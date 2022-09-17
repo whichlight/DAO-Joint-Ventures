@@ -10,8 +10,10 @@ address constant SET_BASIC_ISSUANCE_MODULE = 0xd8EF3cACe8b4907117a45B0b125c68560
 address constant UNISWAP_FACTORY = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
 
 contract JVProposal is IJVProposal {
-  mapping(address => mapping(address => uint256)) userTokenDeposits;
-  mapping(address => uint256) totalDeposits;
+  mapping(address => mapping(IERC20 => uint256))
+    public
+    override userTokenDeposits;
+  mapping(address => uint256) public totalDeposits;
   address[] public deployedPools;
   IJVProposalFactory.DaoConfig[] public daoTokenConfigs;
   IJVProposalFactory.JVTokenConfig public jvTokenConfig;
@@ -46,20 +48,22 @@ contract JVProposal is IJVProposal {
   function deposit(IERC20 token, uint256 amount) external {
     require(_validToken(token), "invalid token");
     totalDeposits[address(token)] += amount;
-    userTokenDeposits[msg.sender][address(token)] += amount;
+    userTokenDeposits[msg.sender][token] += amount;
     token.transferFrom(msg.sender, address(this), amount);
+    emit Deposit(msg.sender, amount);
   }
 
   function withdraw(IERC20 token, uint256 amount) external {
     require(_validToken(token), "invalid token");
     require(
-      userTokenDeposits[msg.sender][address(token)] >= amount,
+      userTokenDeposits[msg.sender][token] >= amount,
       "insufficient balance"
     );
 
     totalDeposits[address(token)] -= amount;
-    userTokenDeposits[msg.sender][address(token)] -= amount;
+    userTokenDeposits[msg.sender][token] -= amount;
     token.transfer(msg.sender, amount);
+    emit Withdraw(msg.sender, amount);
   }
 
   function _validToken(IERC20 token) internal returns (bool) {

@@ -21,17 +21,31 @@ abstract contract Setup is DSTest {
   IJVProposalFactory.DaoConfig[] internal daoConfigs;
 
   address[] users;
+  address alice;
+  address bob;
 
-  MockERC20 tokens;
+  MockERC20[] tokens;
 
   function setUp() public {
+
     utils = new Utilities();
     users = utils.createUsers(5);
 
     address fooDaoTreasury = users[0];
     address barDaoTreasury = users[1];
-    address fooDaoToken = users[2];
-    address barDaoToken = users[3];
+
+    alice = users[2];
+    bob = users[3];
+
+    tokens.push(new MockERC20("BarDAO", "BAR", 18));
+    tokens.push(new MockERC20("FooDAO", "FOO", 18));
+
+    (address fooDaoToken, address barDaoToken) = (
+      address(tokens[0]),
+      address(tokens[1])
+    );
+    _mint();
+
 
     daoConfigs.push();
     daoConfigs.push();
@@ -40,6 +54,8 @@ abstract contract Setup is DSTest {
       IJVProposalFactory.DaoConfig storage barDaoConfig
     ) = (daoConfigs[0], daoConfigs[1]);
 
+    vm.label(alice, "alice");
+    vm.label(bob, "bob");
     vm.label(fooDaoTreasury, "feeDaoTreasury");
     vm.label(barDaoTreasury, "barDaoTreasury");
     vm.label(fooDaoToken, "fooDaoToken");
@@ -65,9 +81,14 @@ abstract contract Setup is DSTest {
     jvTokenConfig.components.push(barDaoToken);
     jvTokenConfig.quantitiesPerUnit.push(1 ether);
     jvTokenConfig.quantitiesPerUnit.push(1 ether);
+  }
 
+  function _mint() internal {
 
-
-    // proposal = new JVProposal(daoConfigs, tokenConfig, feeTier);
+    tokens[0].mint(alice, 1_000_000 ether);
+    tokens[1].mint(alice, 1_000_000 ether);
+    tokens[1].mint(bob, 1_000_000 ether);
+    tokens[1].mint(bob, 1_000_000 ether);
+    
   }
 }

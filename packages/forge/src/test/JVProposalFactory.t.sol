@@ -12,8 +12,6 @@ import "./Setup.sol";
 
 
 contract JVProposalFactoryTest is DSTest, Setup {
-
-
   function test_create_proposal() public {
     IJVProposalFactory factory = new JVProposalFactory();
     uint256 feeTier = 3000;

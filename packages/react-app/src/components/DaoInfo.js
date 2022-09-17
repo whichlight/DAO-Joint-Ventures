@@ -1,12 +1,12 @@
-// import { useDaoInfo } from '../hooks/daoInfoHooks';
+import { Form, Input } from 'antd';
 
 export const DaoInfo = ({ index, daoInfo }) => (
   <div>
     <h3>DAO {index + 1}</h3>
-    <form>
+    <Form>
       <label>
         DAO Name
-        <input
+        <Input
           type="text"
           value={daoInfo.daoName}
           onChange={daoInfo.handleDaoNameChange}
@@ -14,7 +14,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
       </label>
       <label>
         DAO Address
-        <input
+        <Input
           type="text"
           value={daoInfo.daoAddress}
           onChange={daoInfo.handleDaoAddressChange}
@@ -22,7 +22,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
       </label>
       <label>
         Token Contract Address
-        <input
+        <Input
           type="text"
           value={daoInfo.tokenAddress}
           onChange={daoInfo.handleTokenAddressChange}
@@ -30,7 +30,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
       </label>
       <label>
         Number of tokens
-        <input
+        <Input
           type="number"
           value={daoInfo.numTokens}
           onChange={daoInfo.handleNumTokensChange}
@@ -38,7 +38,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
       </label>
       <label>
         % split to treasury
-        <input
+        <Input
           max={100}
           min={0}
           type="number"
@@ -48,7 +48,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
       </label>
       <label>
         % split to pool
-        <input
+        <Input
           type="number"
           min={0}
           max={100}
@@ -56,6 +56,6 @@ export const DaoInfo = ({ index, daoInfo }) => (
           value={daoInfo.split2}
         />
       </label>
-    </form>
+    </Form>
   </div>
 );

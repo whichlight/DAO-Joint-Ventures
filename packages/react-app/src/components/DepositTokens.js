@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { Button } from 'antd';
+import { useParams } from 'react-router-dom';
 
 export const DepositTokens = ({ props }) => {
   const { proposalId } = useParams();
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       <div>
         <ol>
           <li>Specify collaboration terms to deploy joint contract for DAOs</li>
@@ -12,10 +13,10 @@ export const DepositTokens = ({ props }) => {
         </ol>
       </div>
       <div
-        style={{ backgroundColor: "black", width: "100%", height: "0.1rem" }}
+        style={{ backgroundColor: 'black', width: '100%', height: '0.1rem' }}
       ></div>
       <h2>Venture Overview</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <div>
           [DAO 1] will issue [Number of Tokens 1] and [DAO 2] will issue [Number
           of Tokens 2] to create a joint DAO token [New Token]. Each [New Token]
@@ -33,7 +34,7 @@ export const DepositTokens = ({ props }) => {
         </div>
       </div>
       <h2>Funds Deposit and Approval</h2>
-      <div style={{ display: "flex", flexDirection: "row", gap: "1.5rem" }}>
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '1.5rem' }}>
         <div>
           <table>
             <tr>
@@ -69,10 +70,10 @@ export const DepositTokens = ({ props }) => {
       </div>
       <div
         style={{
-          width: "30rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
+          width: '30rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
         }}
       >
         <div>
@@ -84,8 +85,8 @@ export const DepositTokens = ({ props }) => {
           // onChange={handleSplit1Change}
           // value={split1}
         />
-        <div style={{ width: "5rem" }}>
-          <button>Deposit</button>
+        <div style={{ width: '5rem' }}>
+          <Button>Deposit</Button>
         </div>
         <input
           max={100}
@@ -94,15 +95,15 @@ export const DepositTokens = ({ props }) => {
           // value={split1}
         />
 
-        <div style={{ width: "5rem" }}>
-          <button>Withdraw</button>
+        <div style={{ width: '5rem' }}>
+          <Button>Withdraw</Button>
         </div>
       </div>
-      <div style={{ backgroundColor: "#BBFFB0", padding: "1rem" }}>
-        <div style={{ fontSize: "1.5rem" }}>
+      <div style={{ backgroundColor: '#BBFFB0', padding: '1rem' }}>
+        <div style={{ fontSize: '1.5rem' }}>
           Congratulations! Deposits complete.
         </div>
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: '1rem' }}>
           [# to DAO1] tokens have been issued to DAO1, and [# to DAO2] have been
           issued to DAO2.
         </div>

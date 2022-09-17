@@ -1,15 +1,8 @@
-import { Contract } from '@ethersproject/contracts';
-import {
-  shortenAddress,
-  useCall,
-  useEthers,
-  useLookupAddress,
-} from '@usedapp/core';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Button } from 'antd';
+import { shortenAddress, useEthers, useLookupAddress } from '@usedapp/core';
+import React, { useEffect, useState } from 'react';
 
 import './App.css';
-
-import { Body, Button, Container, Header, Image, Link } from './components';
 
 function WalletButton() {
   const [rendered, setRendered] = useState('');

@@ -1,3 +1,5 @@
+const JVDAOFactory = artifacts.require('JVDaoIF.sol');
+
 module.exports = function(deployer) {
-  // Use deployer to state migration tasks.
+  deployer.deploy(JVDAOFactory)
 };

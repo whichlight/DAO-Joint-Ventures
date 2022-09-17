@@ -3,6 +3,41 @@ pragma solidity ^0.8.7;
 
 import "./ERC20.sol";
 
+contract JVDAOFactory {
+    function create(
+        // DAO0
+        address dao0,
+        uint256 numTokens0,
+        address tokenAdd0,
+        // DAO1
+        address dao1,
+        uint256 numTokens1,
+        address tokenAdd1,
+        // NEW OWNER
+        address newOwner,
+        uint256 split,
+        string memory tokenName,
+        string memory tokenSymbol,
+        uint256 tokenSupply
+    ) public returns (JVDaoIF) {
+        JVDaoIF jvd = new JVDaoIF(
+            dao0,
+            numTokens0,
+            tokenAdd0,
+            dao1,
+            numTokens1,
+            tokenAdd1,
+            newOwner,
+            split,
+            tokenName,
+            tokenSymbol,
+            tokenSupply
+        );
+
+       return jvd;
+    }
+}
+
 interface UniswapV3Factory {
     function deploy(
         address tokenA,
@@ -33,40 +68,43 @@ interface SetTokenCreator {
 
 contract JVDaoIF {
     address public dao0;
+    uint256 public numTokens0;
     address public tokenAdd0;
-    uint256 public nTokens0;
+
     address public dao1;
+    uint256 public numTokens1;
     address public tokenAdd1;
-    uint256 public nTokens1;
+
     address public newOwner;
     uint256 public split;
-
     string public tokenName;
     string public tokenSymbol;
     uint256 public tokenSupply;
 
     constructor(
+        // DAO0
         address _dao0,
         uint256 _nTokens0,
+        address _tokenAdd0,
+        // DAO1
         address _dao1,
         uint256 _nTokens1,
-        address _newOwner,
         address _tokenAdd1,
-        address _tokenAdd0,
+        // NEW OWNER
+        address _newOwner,
         uint256 _split,
         string memory _tokenName,
         string memory _tokenSymbol,
         uint256 _tokenSupply
     ) {
         dao0 = _dao0;
-        nTokens0 = _nTokens0;
+        numTokens0 = _nTokens0;
         dao1 = _dao1;
         newOwner = _newOwner;
-        nTokens1 = _nTokens1;
+        numTokens1 = _nTokens1;
         tokenAdd1 = _tokenAdd1;
         tokenAdd0 = _tokenAdd0;
         split = _split;
-
         tokenName = _tokenName;
         tokenSymbol = _tokenSymbol;
         tokenSupply = _tokenSupply;
@@ -122,7 +160,6 @@ contract JVDaoIF {
         address poolAddr1 = UniswapV3Factory(0x1F98431c8aD98523631AE4a59f267346ea31F984).deploy(newTokenAddr, tokenAdd1, 3);
 
         // provide liquidity
-        // get the pool somehow
         Pool(poolAddr0).mint(
             dao0,
             -887272, // tickLower

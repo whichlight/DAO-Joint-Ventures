@@ -3,6 +3,14 @@ pragma solidity ^0.8.7;
 
 import "./ERC20.sol";
 
+interface UniswapV3PoolDeployer {
+    function deploy(address factory, 
+        address token0, 
+        address token1, 
+        uint24 fee, 
+        int24 tickSpacing) external  returns (bool success);
+}
+
 contract JVDaoIF {
     address public dao0;
     address public tokenAdd0;
@@ -55,8 +63,8 @@ contract JVDaoIF {
 
     function mint() public {
         // burn the tokens
-        ERC20(tokenAdd0).transferFrom(dao0, address(0), nTokens0);
-        ERC22(tokenAdd1).transferFrom(dao1, address(0), nTokens1);
+        //ERC20(tokenAdd0).transferFrom(dao0, address(0), nTokens0);
+        //ERC20(tokenAdd1).transferFrom(dao1, address(0), nTokens1);
 
         // create new token
         address newTokenAddr = createToken(tokenName, tokenSymbol, 100);
@@ -64,6 +72,12 @@ contract JVDaoIF {
         // do the split
         ERC20(newTokenAddr).transfer(dao0, tokenSupply * split);
         ERC20(newTokenAddr).transfer(dao1, tokenSupply * (1-split));
+
+        // create liquidity pool
+        UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd0, newTokenAddr, 3, 3);
+        UniswapV3PoolDeployer(newTokenAddr).deploy(newTokenAddr, tokenAdd1, newTokenAddr, 3, 3);
+
+        // provide liquidity
+        exchange.methods.addLiquidity(min_liquidity, max_tokens, deadline).send({ value: ethAmount });
     }
 }
-

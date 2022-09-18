@@ -15,10 +15,12 @@ export const CreateProposal = () => {
   const { library } = useEthers();
 
   const daoInfo1 = useDaoInfo({
+    name: "Foo DAO",
     treasuryAddress: "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
     token: "0x2F54D1563963fC04770E85AF819c89Dc807f6a06",
   });
   const daoInfo2 = useDaoInfo({
+    name: "Bar DAO",
     treasuryAddress: "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
     token: "0xF342E904702b1D021F03f519D6D9614916b03f37",
   });
@@ -49,13 +51,21 @@ export const CreateProposal = () => {
 
   const { state, send } = useContractFunction(
     contract,
-    "createProposal(DaoConfig[],JVTokenConfig,uint256)",
+    "createProposal",
     {
       transactionName: "Wrap",
     }
   );
 
+
   const createProposal = () => {
+    console.log("DAATA", [dao1Config, dao2Config],
+    {
+      name: tokenInfo.name,
+      symbol: tokenInfo.tokenSymbol,
+      components: [dao1Config.tokenAddress, dao2Config.tokenAddress],
+    },
+    3000);
     send(
       [dao1Config, dao2Config],
       {
@@ -111,7 +121,7 @@ export const CreateProposal = () => {
       <NewTokenInfo tokenInfo={tokenInfo} />
 
       {!contractAddress ? (
-        <Button disabled={!isValid} onClick={send}>
+        <Button disabled={!isValid} onClick={createProposal}>
           Create Proposal
         </Button>
       ) : (

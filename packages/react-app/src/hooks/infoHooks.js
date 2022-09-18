@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useSplit } from './splitHooks';
 
-export const useDaoInfo = ({treasuryAddress, token}) => {
-  const [daoName, setDaoName] = useState('Name');
+export const useDaoInfo = ({treasuryAddress, token, name }) => {
+  const [daoName, setDaoName] = useState(name);
   const [daoAddress, setDaoAddress] = useState(
     treasuryAddress
   );
@@ -42,8 +42,8 @@ export const useDaoInfo = ({treasuryAddress, token}) => {
 };
 
 export const useNewTokenInfo = () => {
-  const [tokenName, setTokenName] = useState('tokenname');
-  const [tokenSymbol, setTokenSymbol] = useState('tkyn');
+  const [tokenName, setTokenName] = useState('FooBar Joint Venture');
+  const [tokenSymbol, setTokenSymbol] = useState('BAZ');
 
   const handleTokenNameChange = useCallback(({ target: { value } }) => {
     setTokenName(value);
@@ -53,7 +53,7 @@ export const useNewTokenInfo = () => {
     setTokenSymbol(value);
   }, []);
 
-  const { split1, split2, handleSplit1Change, handleSplit2Change } = useSplit();
+  const { dao1MintSplit, dao2MintSplit, handleSplit1Change, handleSplit2Change } = useSplit();
 
   return {
     handleSplit1Change,

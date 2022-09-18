@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import { useEthers, useContractFunction } from "@usedapp/core";
+import { parseEther } from "ethers/lib/utils";
 
 import { useDaoInfo, useNewTokenInfo } from "../hooks/infoHooks";
 import { DaoInfo } from "./DaoInfo";
@@ -30,18 +31,18 @@ export const CreateProposal = () => {
     treasuryAddress: daoInfo1.daoAddress,
     tokenAddress: daoInfo1.tokenAddress,
     tokenDepositTarget: daoInfo1.numTokens,
-    treasurySplit: daoInfo1.treasurySplit,
-    poolSplit: daoInfo1.poolSplit,
-    mintSplit: tokenInfo.dao1MintSplit,
+    treasurySplit: daoInfo1.treasurySplit || parseEther('50'),
+    poolSplit: daoInfo1.poolSplit || parseEther('50'),
+    mintSplit: tokenInfo.dao1MintSplit || parseEther('50'),
   };
 
   const dao2Config = {
     treasuryAddress: daoInfo1.daoAddress,
     tokenAddress: daoInfo1.tokenAddress,
     tokenDepositTarget: daoInfo1.numTokens,
-    treasurySplit: daoInfo1.treasurySplit,
-    poolSplit: daoInfo1.poolSplit,
-    mintSplit: tokenInfo.dao2MintSplit,
+    treasurySplit: daoInfo1.treasurySplit|| parseEther('50'),
+    poolSplit: daoInfo1.poolSplit || parseEther('50'),
+    mintSplit: tokenInfo.dao2MintSplit|| parseEther('50'),
   };
 
   const contract = new Contract(

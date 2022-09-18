@@ -29,7 +29,25 @@ contract JVProposalFactoryTest is DSTest, Setup {
     assertEq(_proposal().feeTier(), 3000);
   }
 
-  function test_execute() public {
+  function test_execute_creates_jv_token() public {
+    (
+      address proposal,
+      address jvToken,
+      address[] memory uniPools,
+      address[] memory arrakisVaults
+    ) = _execute_proposal();
+    assertEq(jvToken, 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
+  }
+
+  function _execute_proposal()
+    internal
+    returns (
+      address proposal,
+      address jvToken,
+      address[] memory uniPools,
+      address[] memory arrakisVaults
+    )
+  {
     IJVProposal proposal = _proposal();
     _depositTargetAmounts(proposal);
 
@@ -39,12 +57,24 @@ contract JVProposalFactoryTest is DSTest, Setup {
       address[] memory arrakisVaults
     ) = proposal.execute();
 
-    //_printBalances(proposal, uniPools, arrakisVaults);
-    assertEq(jvToken, 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
+    return (address(proposal), jvToken, uniPools, arrakisVaults);
+  }
+
+  function test_execute_deploys_liquidity_pools() public {
+    (
+      address proposal,,
+      address[] memory uniPools,
+      address[] memory arrakisVaults
+    ) = _execute_proposal();
+
     assertEq(uniPools[0], 0xaF30631eF1dA8A9258285848c640d0c73AB19195);
     assertEq(uniPools[1], 0xC75aCb29471B496726E45e0Db8EAB8Aa92A35C1f);
     assertEq(arrakisVaults[0], 0xf62FAb0b5A8255Eb1976cA9771Db23D55978d311);
     assertEq(arrakisVaults[1], 0xE0A34a39c694fFc1beCEcf5bd948e534931C1105);
+  }
+
+  function test_execute_transfer_tokens_to_daos() public {
+    (, address jvToken, , address[] memory arrakisVaults) = _execute_proposal();
     assertEq(
       IERC20(arrakisVaults[0]).balanceOf(daoConfigs[0].treasuryAddress),
       25_323.011161671758759583 ether
@@ -53,8 +83,14 @@ contract JVProposalFactoryTest is DSTest, Setup {
       IERC20(arrakisVaults[1]).balanceOf(daoConfigs[1].treasuryAddress),
       25_323.011161671758759583 ether
     );
-    assertEq(IERC20(jvToken).balanceOf(daoConfigs[0].treasuryAddress), 25_000.000000000000000001 ether);
-    assertEq(IERC20(jvToken).balanceOf(daoConfigs[1].treasuryAddress), 25_000.000000000000000001 ether);
+    assertEq(
+      IERC20(jvToken).balanceOf(daoConfigs[0].treasuryAddress),
+      25_000.000000000000000001 ether
+    );
+    assertEq(
+      IERC20(jvToken).balanceOf(daoConfigs[1].treasuryAddress),
+      25_000.000000000000000001 ether
+    );
   }
 
   function _depositTargetAmounts(IJVProposal proposal) internal {
@@ -90,7 +126,7 @@ contract JVProposalFactoryTest is DSTest, Setup {
     assertEq(proposal.userTokenDeposits(alice, token), 0);
   }
 
-    function _printBalances(
+  function _printBalances(
     IJVProposal proposal,
     address[] memory uniPools,
     address[] memory arrakisVaults

@@ -21,6 +21,6 @@ contract JVProposalFactoryTest is DSTest, Setup {
         feeTier
     );
 
-    assertEq(address(response), 0x0000000000000000000000000000000000000000);
+    assertEq(address(response), 0x73A1564465e54a58De2Dbc3b5032fD013fc95aD4);
   }
 }

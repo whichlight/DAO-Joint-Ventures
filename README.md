@@ -4,6 +4,18 @@
 
 More info on the idea [here](https://gist.github.com/anthonymartin/ba5f0755ee506c068a33c23593facbbc). 
 
+## Project Status
+
+- [x] All main contract functions are tested and all tests are passing with correct behavior
+- [x] Any number of DAOs can structure a joint venture deal. There is no limit to the number of participating DAOs
+- [x] DAOs may deposit (and withdraw) their tokens to collateralize the joint venture token
+- [x] When deposit target amounts have been reached, Uniswap pools are created, Arrakis vaults are created, liquidity is deposited to those pools (one pool per DAO Token/JV Token combo), LP tokens and JV tokens are transferred to each DAO treasury
+- [x] JV tokens (joint venture tokens) are minted using Set Protocol and are backed by deposited DAO tokens
+- [x] Liquidity splits are dynamic
+- [ ] UI is completely functional
+- [ ] Oracles implemented for valuation logic
+
+
 ## Setup
 
 * Install [Foundry](https://github.com/foundry-rs/foundry)

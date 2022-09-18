@@ -12,7 +12,6 @@ import "./interfaces/IBasicIssuanceModule.sol";
 import "./interfaces/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-import { console } from "./test/utils/Console.sol";
 
 address constant SET_CREATOR = 0xeF72D3278dC3Eba6Dc2614965308d1435FFd748a;
 address constant SET_BASIC_ISSUANCE_MODULE = 0xd8EF3cACe8b4907117a45B0b125c68560532F94D;
@@ -100,7 +99,7 @@ contract JVProposal is IJVProposal {
     uint256 tokenCount = daoTokenConfigs.length;
     address[] memory vaults = new address[](tokenCount);
     address[] memory pools = new address[](tokenCount);
-    
+
     for (uint256 i; i < tokenCount; i++) {
 
       address pool = IUniswapV3Factory(UNISWAP_FACTORY).createPool(

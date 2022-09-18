@@ -10,9 +10,6 @@ contract JVProposalFactory is IJVProposalFactory {
     JVTokenConfig memory _jvTokenConfig,
     uint256 _feeTier
   ) external override returns (IJVProposal) {
-    _daoConfigs;
-    _jvTokenConfig;
-    _feeTier;
     JVProposal jv = new JVProposal(_daoConfigs, _jvTokenConfig, _feeTier);
     return jv;
   }

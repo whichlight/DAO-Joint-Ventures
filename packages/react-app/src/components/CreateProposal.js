@@ -62,7 +62,7 @@ export const CreateProposal = () => {
   const createProposal = () => {
     console.log("DAATA", [dao1Config, dao2Config],
     {
-      name: tokenInfo.name,
+      name: tokenInfo.tokenName,
       symbol: tokenInfo.tokenSymbol,
       components: [dao1Config.tokenAddress, dao2Config.tokenAddress],
     },
@@ -70,7 +70,7 @@ export const CreateProposal = () => {
     send(
       [dao1Config, dao2Config],
       {
-        name: tokenInfo.name,
+        name: tokenInfo.tokenName,
         symbol: tokenInfo.tokenSymbol,
         components: [dao1Config.tokenAddress, dao2Config.tokenAddress],
       },

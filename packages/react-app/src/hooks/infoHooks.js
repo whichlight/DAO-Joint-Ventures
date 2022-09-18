@@ -53,7 +53,7 @@ export const useNewTokenInfo = () => {
     setTokenSymbol(value);
   }, []);
 
-  const { dao1MintSplit, dao2MintSplit, handleSplit1Change, handleSplit2Change } = useSplit();
+  const { split1, split2, handleSplit1Change, handleSplit2Change } = useSplit();
 
   return {
     handleSplit1Change,

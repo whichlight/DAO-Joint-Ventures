@@ -33,11 +33,11 @@ contract JVProposalFactoryTest is DSTest, Setup {
     IJVProposal proposal = _proposal();
     _depositTargetAmounts(proposal);
     address[3] memory deployedAddresses = proposal.execute();
-    vm.label(deployedAddresses[0], 'jvToken');
-    assertEq(IERC20(deployedAddresses[0]).balanceOf(address(proposal)), 100_000 ether);
-    assertEq(deployedAddresses[0], 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
-  }
 
+    assertEq(deployedAddresses[0], 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
+    assertEq(deployedAddresses[1], 0xaF30631eF1dA8A9258285848c640d0c73AB19195);
+    assertEq(deployedAddresses[2], 0xC75aCb29471B496726E45e0Db8EAB8Aa92A35C1f);
+  }
 
   function _depositTargetAmounts(IJVProposal proposal) internal {
     IERC20 token0 = IERC20(address(tokens[0]));
@@ -71,5 +71,4 @@ contract JVProposalFactoryTest is DSTest, Setup {
 
     assertEq(proposal.userTokenDeposits(alice, token), 0);
   }
-
 }

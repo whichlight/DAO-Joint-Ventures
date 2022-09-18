@@ -79,16 +79,14 @@ abstract contract Setup is DSTest {
     jvTokenConfig.symbol = "BAZ";
     jvTokenConfig.components.push(fooDaoToken);
     jvTokenConfig.components.push(barDaoToken);
-    jvTokenConfig.quantitiesPerUnit.push(1 ether / 2);
-    jvTokenConfig.quantitiesPerUnit.push(1 ether / 2);
+    jvTokenConfig.quantitiesPerUnit.push(.5 ether);
+    jvTokenConfig.quantitiesPerUnit.push(.5 ether);
   }
 
   function _mint() internal {
-
     tokens[0].mint(alice, 1_000_000 ether);
     tokens[1].mint(alice, 1_000_000 ether);
     tokens[1].mint(bob, 1_000_000 ether);
     tokens[1].mint(bob, 1_000_000 ether);
-    
   }
 }

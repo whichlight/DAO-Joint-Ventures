@@ -4,16 +4,22 @@ pragma solidity ^0.8.15;
 import "./interfaces/IJVProposal.sol";
 import "./interfaces/IJVProposalFactory.sol";
 import "./interfaces/ISetTokenCreator.sol";
+import "./interfaces/IUniswapV3Factory.sol";
+import "./interfaces/IUniswapV3Pool.sol";
+import "./interfaces/IArrakisFactory.sol";
 import "./interfaces/IBasicIssuanceModule.sol";
 import "./interfaces/IERC20.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 import { console } from "./test/utils/Console.sol";
 
 address constant SET_CREATOR = 0xeF72D3278dC3Eba6Dc2614965308d1435FFd748a;
 address constant SET_BASIC_ISSUANCE_MODULE = 0xd8EF3cACe8b4907117a45B0b125c68560532F94D;
 address constant UNISWAP_FACTORY = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
+address constant ARRAKIS_FACTORY = 0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9;
 
 contract JVProposal is IJVProposal {
+
   mapping(address => mapping(IERC20 => uint256))
     public
     override userTokenDeposits;
@@ -36,7 +42,7 @@ contract JVProposal is IJVProposal {
         SET_BASIC_ISSUANCE_MODULE,
         type(uint256).max
       );
-      if (i == 0 ) modules.push(SET_BASIC_ISSUANCE_MODULE);
+      if (i == 0) modules.push(SET_BASIC_ISSUANCE_MODULE);
     }
     jvTokenConfig = _jvTokenConfig;
     feeTier = _feeTier;
@@ -46,21 +52,66 @@ contract JVProposal is IJVProposal {
     require(canExecute(), "deposit targets not reached");
     address _jvToken = _createToken();
     _mint();
-    
-    // issue jvToken units
+    _deployUniswapPools();
+
     // deposit to uniswap
     // transfer LP tokens to DAO treasury
     // transfer jvTokens to DAO treasury
 
-    return [_jvToken, address(0), address(0)];
+    return [_jvToken, deployedPools[0], deployedPools[1]];
   }
 
   function _mint() internal {
     IBasicIssuanceModule(SET_BASIC_ISSUANCE_MODULE).issue(
       ISetToken(address(jvToken)),
-      100_000 ether,
+      _getIssuanceAmount(),
       address(this)
     );
+  }
+
+  function _deployUniswapPools() internal {
+    for (uint256 i; i < daoTokenConfigs.length; i++) {
+      address pool = IUniswapV3Factory(UNISWAP_FACTORY).createPool(
+        address(jvToken),
+        daoTokenConfigs[i].tokenAddress,
+        uint24(feeTier)
+      );
+
+      // assuming 1 jvToken = 2 dao tokens
+      uint160 sqrtPrice = uint160(Math.sqrt(.5 ether) * 2 ** 96);
+      IUniswapV3Pool(pool).initialize(sqrtPrice);
+
+      IArrakisFactory(ARRAKIS_FACTORY).deployVault(
+        address(jvToken),
+        daoTokenConfigs[i].tokenAddress,
+        uint24(3000),
+        address(this),
+        uint16(0),
+        int24(-87240),
+        int24(87240)
+      );
+      
+
+      deployedPools.push(pool);
+    }
+  }
+
+  function _getIssuanceAmount() internal view returns (uint256) {
+    uint256 issuanceAmount = ((daoTokenConfigs[0].tokenDepositTarget *
+      daoTokenConfigs[0].mintSplit) /
+      100 ether /
+      uint256(jvTokenConfig.quantitiesPerUnit[0])) * 1 ether;
+
+    for (uint256 i = 1; i < daoTokenConfigs.length; i++) {
+      issuanceAmount = Math.min(
+        issuanceAmount,
+        ((daoTokenConfigs[i].tokenDepositTarget *
+          daoTokenConfigs[i].mintSplit) /
+          100 ether /
+          uint256(jvTokenConfig.quantitiesPerUnit[0])) * 1 ether
+      );
+    }
+    return issuanceAmount;
   }
 
   function _createToken() internal returns (address) {
@@ -92,15 +143,7 @@ contract JVProposal is IJVProposal {
       if (
         totalDeposits[daoTokenConfigs[i].tokenAddress] <
         daoTokenConfigs[i].tokenDepositTarget
-      ) {
-        console.log(
-          "total deposits",
-          totalDeposits[daoTokenConfigs[i].tokenAddress]
-        );
-        console.log("token address", daoTokenConfigs[i].tokenAddress);
-        console.log("deposit target", daoTokenConfigs[i].tokenDepositTarget);
-        return false;
-      }
+      ) return false;
     }
     return true;
   }

@@ -1,4 +1,4 @@
-## DAO Joint Venture Starter with Liquidity Bootstrapping
+# DAO Joint Venture Starter with Liquidity Bootstrapping
 
 *It's like a DAO treasury swap on steriods!*
 

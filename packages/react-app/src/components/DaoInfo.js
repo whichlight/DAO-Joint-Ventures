@@ -25,7 +25,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
         />
       </label>
       <label>
-        Number of tokens{' '}
+        Target # of tokens to deposit{' '}
         <InputNumber
           value={daoInfo.numTokens}
           onChange={daoInfo.setNumTokens}
@@ -37,7 +37,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
           max={100}
           min={0}
           onChange={daoInfo.handleSplit1Change}
-          value={daoInfo.split1}
+          value={daoInfo.treasurySplit}
         />
       </label>
       <label>
@@ -46,7 +46,7 @@ export const DaoInfo = ({ index, daoInfo }) => (
           min={0}
           max={100}
           onChange={daoInfo.handleSplit2Change}
-          value={daoInfo.split2}
+          value={daoInfo.poolSplit}
         />
       </label>
     </Form>

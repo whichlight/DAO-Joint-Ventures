@@ -89,7 +89,7 @@ export const DepositTokens = ({ props }) => {
               max={100}
               min={0}
               // onChange={handleSplit1Change}
-              // value={split1}
+              // value={treasurySplit}
             />
             <div style={{ width: "5rem" }}>
               <Button>Deposit</Button>
@@ -98,7 +98,7 @@ export const DepositTokens = ({ props }) => {
               max={100}
               min={0}
               // onChange={handleSplit1Change}
-              // value={split1}
+              // value={treasurySplit}
             />
 
             <div style={{ width: "5rem" }}>

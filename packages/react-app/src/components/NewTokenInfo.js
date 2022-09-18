@@ -26,7 +26,7 @@ export const NewTokenInfo = ({ tokenInfo }) => (
           min={0}
           max={100}
           onChange={tokenInfo.handleSplit1Change}
-          value={tokenInfo.split1}
+          value={tokenInfo.mintSplit}
         />
       </label>
       <label>
@@ -35,7 +35,7 @@ export const NewTokenInfo = ({ tokenInfo }) => (
           min={0}
           max={100}
           onChange={tokenInfo.handleSplit2Change}
-          value={tokenInfo.split2}
+          value={tokenInfo.mintSplit}
         />
       </label>
     </Form>

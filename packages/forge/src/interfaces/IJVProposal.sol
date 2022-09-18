@@ -6,9 +6,11 @@ interface IJVProposal {
   event Deposit(address indexed account, uint256 amount, address token);
   event Withdraw(address indexed account, uint256 amount, address token);
 
+  function jvToken() external returns (IERC20);
+
   function feeTier() external returns (uint256);
 
-  function execute() external returns (address[3] memory );
+  function execute() external returns (address, address[] memory, address[] memory);
 
   function canExecute() external returns (bool);
 

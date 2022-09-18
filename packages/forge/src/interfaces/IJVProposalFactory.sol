@@ -8,9 +8,9 @@ interface IJVProposalFactory {
     address treasuryAddress;
     address tokenAddress;
     uint256 tokenDepositTarget;
-    uint256 treasurySplit;
-    uint256 poolSplit;
-    uint256 mintSplit;
+    uint256 treasurySplit; // % minted supply to transfer to treasury
+    uint256 poolSplit; // % of minted supply to use for pool liquidity
+    uint256 mintSplit; // % of dao tokens to use for minting
   }
   struct JVTokenConfig {
     string name;

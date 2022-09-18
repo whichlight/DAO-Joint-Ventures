@@ -32,11 +32,89 @@ contract JVProposalFactoryTest is DSTest, Setup {
   function test_execute() public {
     IJVProposal proposal = _proposal();
     _depositTargetAmounts(proposal);
-    address[3] memory deployedAddresses = proposal.execute();
 
-    assertEq(deployedAddresses[0], 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
-    assertEq(deployedAddresses[1], 0xaF30631eF1dA8A9258285848c640d0c73AB19195);
-    assertEq(deployedAddresses[2], 0xC75aCb29471B496726E45e0Db8EAB8Aa92A35C1f);
+    (
+      address jvToken,
+      address[] memory uniPools,
+      address[] memory arrakisVaults
+    ) = proposal.execute();
+
+    _printBalances(proposal, uniPools, arrakisVaults);
+    assertEq(jvToken, 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
+    assertEq(uniPools[0], 0xaF30631eF1dA8A9258285848c640d0c73AB19195);
+    assertEq(uniPools[1], 0xC75aCb29471B496726E45e0Db8EAB8Aa92A35C1f);
+    assertEq(arrakisVaults[0], 0xf62FAb0b5A8255Eb1976cA9771Db23D55978d311);
+    assertEq(arrakisVaults[1], 0xE0A34a39c694fFc1beCEcf5bd948e534931C1105);
+    assertEq(
+      IERC20(arrakisVaults[0]).balanceOf(daoConfigs[0].treasuryAddress),
+      50646.022323343517519166 ether
+    );
+    assertEq(
+      IERC20(arrakisVaults[1]).balanceOf(daoConfigs[1].treasuryAddress),
+      50646.022323343517519166 ether
+    );
+  }
+
+  function _printBalances(
+    IJVProposal proposal,
+    address[] memory uniPools,
+    address[] memory arrakisVaults
+  ) internal {
+    address jvToken = address(proposal.jvToken());
+    console.log(IERC20(jvToken).totalSupply(), "total supply of JV token");
+    console.log(
+      IERC20(jvToken).balanceOf(address(proposal)),
+      "proposal jv balance"
+    );
+    console.log(
+      IERC20(daoConfigs[0].tokenAddress).balanceOf(address(proposal)),
+      "proposal foo balance"
+    );
+    console.log(
+      IERC20(jvToken).balanceOf(address(uniPools[0])),
+      "unipool0 jv balance"
+    );
+    console.log(
+      IERC20(daoConfigs[0].tokenAddress).balanceOf(address(uniPools[0])),
+      "unipool0 foo balance"
+    );
+
+
+    console.log(
+      IERC20(jvToken).balanceOf(address(uniPools[1])),
+      "unipool1 jv balance"
+    );
+
+    console.log(
+      IERC20(daoConfigs[1].tokenAddress).balanceOf(address(uniPools[1])),
+      "unipool1 bar balance"
+    );
+
+    console.log(
+      IERC20(daoConfigs[0].tokenAddress).balanceOf(address(arrakisVaults[0])),
+      "arrakisVault0 foo balance"
+    );
+    console.log(
+      IERC20(daoConfigs[1].tokenAddress).balanceOf(address(arrakisVaults[0])),
+      "arrakisVault0 bar balance"
+    );
+    console.log(
+      IERC20(jvToken).balanceOf(address(arrakisVaults[0])),
+      "arrakisVault0 jv balance"
+    );
+    console.log(
+      IERC20(daoConfigs[0].tokenAddress).balanceOf(address(arrakisVaults[1])),
+      "arrakisVault1 foo balance"
+    );
+    console.log(
+      IERC20(daoConfigs[1].tokenAddress).balanceOf(address(arrakisVaults[1])),
+      "arrakisVault1 bar balance"
+    );
+
+    console.log(
+      IERC20(jvToken).balanceOf(address(arrakisVaults[1])),
+      "arrakisVault1 jv balance"
+    );
   }
 
   function _depositTargetAmounts(IJVProposal proposal) internal {

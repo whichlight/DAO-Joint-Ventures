@@ -56,7 +56,7 @@ abstract contract Setup is DSTest {
 
     vm.label(alice, "alice");
     vm.label(bob, "bob");
-    vm.label(fooDaoTreasury, "feeDaoTreasury");
+    vm.label(fooDaoTreasury, "fooDaoTreasury");
     vm.label(barDaoTreasury, "barDaoTreasury");
     vm.label(fooDaoToken, "fooDaoToken");
     vm.label(barDaoToken, "barDaoToken");

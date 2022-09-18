@@ -6,6 +6,7 @@ import "./interfaces/IJVProposalFactory.sol";
 import "./interfaces/ISetTokenCreator.sol";
 import "./interfaces/IUniswapV3Factory.sol";
 import "./interfaces/IUniswapV3Pool.sol";
+import "./interfaces/IArrakisVault.sol";
 import "./interfaces/IArrakisFactory.sol";
 import "./interfaces/IBasicIssuanceModule.sol";
 import "./interfaces/IERC20.sol";
@@ -19,17 +20,17 @@ address constant UNISWAP_FACTORY = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
 address constant ARRAKIS_FACTORY = 0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9;
 
 contract JVProposal is IJVProposal {
-
+  
   mapping(address => mapping(IERC20 => uint256))
     public
     override userTokenDeposits;
+
   mapping(address => uint256) public override totalDeposits;
-  address[] public deployedPools;
+
   IJVProposalFactory.DaoConfig[] public daoTokenConfigs;
   IJVProposalFactory.JVTokenConfig public jvTokenConfig;
   uint256 public feeTier;
-  address[] modules;
-  IERC20 public jvToken;
+  IERC20 public override jvToken;
 
   constructor(
     IJVProposalFactory.DaoConfig[] memory _daoTokenConfigs,
@@ -42,35 +43,55 @@ contract JVProposal is IJVProposal {
         SET_BASIC_ISSUANCE_MODULE,
         type(uint256).max
       );
-      if (i == 0) modules.push(SET_BASIC_ISSUANCE_MODULE);
     }
+
     jvTokenConfig = _jvTokenConfig;
     feeTier = _feeTier;
   }
 
-  function execute() external override returns (address[3] memory) {
+  function execute()
+    external
+    override
+    returns (
+      address,
+      address[] memory,
+      address[] memory
+    )
+  {
     require(canExecute(), "deposit targets not reached");
-    address _jvToken = _createToken();
-    _mint();
-    _deployUniswapPools();
 
-    // deposit to uniswap
-    // transfer LP tokens to DAO treasury
+    address _jvToken = _createToken();
+
+    uint256 mintedAmount = _mint();
+
+    (
+      address[] memory pools,
+      address[] memory vaults
+    ) = _deployPoolsAndLiquidity(mintedAmount);
+
     // transfer jvTokens to DAO treasury
 
-    return [_jvToken, deployedPools[0], deployedPools[1]];
+    return (_jvToken, pools, vaults);
   }
 
-  function _mint() internal {
+  function _mint() internal returns (uint256) {
     IBasicIssuanceModule(SET_BASIC_ISSUANCE_MODULE).issue(
       ISetToken(address(jvToken)),
       _getIssuanceAmount(),
       address(this)
     );
+    return IERC20(jvToken).balanceOf(address(this));
   }
 
-  function _deployUniswapPools() internal {
-    for (uint256 i; i < daoTokenConfigs.length; i++) {
+  function _deployPoolsAndLiquidity(uint256 jvTokenMintedAmount)
+    internal
+    returns (address[] memory, address[] memory)
+  {
+    uint256 tokenCount = daoTokenConfigs.length;
+    address[] memory vaults = new address[](tokenCount);
+    address[] memory pools = new address[](tokenCount);
+    for (uint256 i; i < tokenCount; i++) {
+
       address pool = IUniswapV3Factory(UNISWAP_FACTORY).createPool(
         address(jvToken),
         daoTokenConfigs[i].tokenAddress,
@@ -78,22 +99,43 @@ contract JVProposal is IJVProposal {
       );
 
       // assuming 1 jvToken = 2 dao tokens
-      uint160 sqrtPrice = uint160(Math.sqrt(.5 ether) * 2 ** 96);
+      uint160 sqrtPrice = uint160(Math.sqrt(1 ether) * 2**96) / 1_000_000_000;
+
       IUniswapV3Pool(pool).initialize(sqrtPrice);
 
-      IArrakisFactory(ARRAKIS_FACTORY).deployVault(
-        address(jvToken),
-        daoTokenConfigs[i].tokenAddress,
-        uint24(3000),
-        address(this),
-        uint16(0),
-        int24(-87240),
-        int24(87240)
+      IArrakisVault vault = IArrakisVault(
+        IArrakisFactory(ARRAKIS_FACTORY).deployVault(
+          address(jvToken),
+          daoTokenConfigs[i].tokenAddress,
+          uint24(3000),
+          daoTokenConfigs[i].treasuryAddress,
+          uint16(0),
+          int24(-87240),
+          int24(87240)
+        )
       );
-      
 
-      deployedPools.push(pool);
+      uint256 amount0Max = (jvTokenMintedAmount *
+        daoTokenConfigs[i].poolSplit) / 100 ether;
+
+      uint256 amount1Max = IERC20(daoTokenConfigs[i].tokenAddress).balanceOf(
+        address(this)
+      );
+
+      (, , uint256 mintAmount) = vault.getMintAmounts(amount0Max, amount1Max);
+
+      IERC20(daoTokenConfigs[i].tokenAddress).approve(
+        address(vault),
+        type(uint256).max
+      );
+
+      jvToken.approve(address(vault), type(uint256).max);
+      vault.mint(mintAmount, daoTokenConfigs[i].treasuryAddress);
+
+      vaults[i] = address(vault);
+      pools[i] = address(pool);
     }
+    return (pools, vaults);
   }
 
   function _getIssuanceAmount() internal view returns (uint256) {
@@ -116,13 +158,14 @@ contract JVProposal is IJVProposal {
 
   function _createToken() internal returns (address) {
     int256[] memory quantitiesPerUnit = jvTokenConfig.quantitiesPerUnit;
-
+    address[] memory _modules = new address[](1);
+    _modules[0] = SET_BASIC_ISSUANCE_MODULE;
     jvToken = IERC20(
       address(
         ISetTokenCreator(SET_CREATOR).create(
           jvTokenConfig.components,
           quantitiesPerUnit,
-          modules,
+          _modules,
           address(this), // manager
           jvTokenConfig.name,
           jvTokenConfig.symbol

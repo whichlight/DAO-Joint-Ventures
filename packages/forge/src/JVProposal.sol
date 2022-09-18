@@ -20,7 +20,6 @@ address constant UNISWAP_FACTORY = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
 address constant ARRAKIS_FACTORY = 0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9;
 
 contract JVProposal is IJVProposal {
-  
   mapping(address => mapping(IERC20 => uint256))
     public
     override userTokenDeposits;
@@ -62,19 +61,30 @@ contract JVProposal is IJVProposal {
 
     address _jvToken = _createToken();
 
-    uint256 mintedAmount = _mint();
+    uint256 mintedAmount = _mintJvTokens();
 
     (
       address[] memory pools,
       address[] memory vaults
     ) = _deployPoolsAndLiquidity(mintedAmount);
 
-    // transfer jvTokens to DAO treasury
+    _transferJvTokens();
 
     return (_jvToken, pools, vaults);
   }
 
-  function _mint() internal returns (uint256) {
+  function _transferJvTokens() internal {
+    uint256 balance = IERC20(jvToken).balanceOf(address(this));
+    for (uint256 i; i < daoTokenConfigs.length; i++) {
+      IJVProposalFactory.DaoConfig memory dao = daoTokenConfigs[i];
+      IERC20(jvToken).transfer(
+        dao.treasuryAddress,
+        (balance * dao.treasurySplit) / 100 ether
+      );
+    }
+  }
+
+  function _mintJvTokens() internal returns (uint256) {
     IBasicIssuanceModule(SET_BASIC_ISSUANCE_MODULE).issue(
       ISetToken(address(jvToken)),
       _getIssuanceAmount(),
@@ -91,7 +101,6 @@ contract JVProposal is IJVProposal {
     address[] memory vaults = new address[](tokenCount);
     address[] memory pools = new address[](tokenCount);
     for (uint256 i; i < tokenCount; i++) {
-
       address pool = IUniswapV3Factory(UNISWAP_FACTORY).createPool(
         address(jvToken),
         daoTokenConfigs[i].tokenAddress,
@@ -115,8 +124,9 @@ contract JVProposal is IJVProposal {
         )
       );
 
-      uint256 amount0Max = (jvTokenMintedAmount *
-        daoTokenConfigs[i].poolSplit) / 100 ether;
+      uint256 amount0Max = (((jvTokenMintedAmount *
+        daoTokenConfigs[i].poolSplit) / 100 ether) *
+        daoTokenConfigs[i].mintSplit) / 100 ether;
 
       uint256 amount1Max = IERC20(daoTokenConfigs[i].tokenAddress).balanceOf(
         address(this)
@@ -212,7 +222,7 @@ contract JVProposal is IJVProposal {
     emit Withdraw(msg.sender, amount, address(token));
   }
 
-  function _validToken(IERC20 token) internal returns (bool) {
+  function _validToken(IERC20 token) internal view returns (bool) {
     for (uint256 i; i < daoTokenConfigs.length; i++) {
       if (daoTokenConfigs[i].tokenAddress == address(token)) return true;
     }

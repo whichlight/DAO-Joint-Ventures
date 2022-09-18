@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Unlicense
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.15;
 
 import { DSTest } from "ds-test/test.sol";
 import { Utilities } from "./utils/Utilities.sol";
@@ -39,7 +39,7 @@ contract JVProposalFactoryTest is DSTest, Setup {
       address[] memory arrakisVaults
     ) = proposal.execute();
 
-    _printBalances(proposal, uniPools, arrakisVaults);
+    //_printBalances(proposal, uniPools, arrakisVaults);
     assertEq(jvToken, 0xc84225f52C1cd66Af2cC7a5497A715f79BaFa7ee);
     assertEq(uniPools[0], 0xaF30631eF1dA8A9258285848c640d0c73AB19195);
     assertEq(uniPools[1], 0xC75aCb29471B496726E45e0Db8EAB8Aa92A35C1f);
@@ -47,15 +47,50 @@ contract JVProposalFactoryTest is DSTest, Setup {
     assertEq(arrakisVaults[1], 0xE0A34a39c694fFc1beCEcf5bd948e534931C1105);
     assertEq(
       IERC20(arrakisVaults[0]).balanceOf(daoConfigs[0].treasuryAddress),
-      50646.022323343517519166 ether
+      25_323.011161671758759583 ether
     );
     assertEq(
       IERC20(arrakisVaults[1]).balanceOf(daoConfigs[1].treasuryAddress),
-      50646.022323343517519166 ether
+      25_323.011161671758759583 ether
     );
+    assertEq(IERC20(jvToken).balanceOf(daoConfigs[0].treasuryAddress), 25_000.000000000000000001 ether);
+    assertEq(IERC20(jvToken).balanceOf(daoConfigs[1].treasuryAddress), 25_000.000000000000000001 ether);
   }
 
-  function _printBalances(
+  function _depositTargetAmounts(IJVProposal proposal) internal {
+    IERC20 token0 = IERC20(address(tokens[0]));
+    IERC20 token1 = IERC20(address(tokens[1]));
+    vm.startPrank(alice);
+    token0.approve(address(proposal), 100_000 ether);
+    token1.approve(address(proposal), 100_000 ether);
+    proposal.deposit(token0, 100_000 ether);
+    proposal.deposit(token1, 100_000 ether);
+  }
+
+  function test_deposit() public {
+    IERC20 token = IERC20(address(tokens[0]));
+    IJVProposal proposal = _proposal();
+    vm.startPrank(alice);
+    token.approve(address(proposal), 100_000 ether);
+    proposal.deposit(token, 100_000 ether);
+
+    assertEq(proposal.userTokenDeposits(alice, token), 100_000 ether);
+    assertEq(proposal.totalDeposits(address(token)), 100_000 ether);
+    assertEq(token.balanceOf(address(proposal)), 100_000 ether);
+  }
+
+  function test_withdraw() public {
+    IERC20 token = IERC20(address(tokens[0]));
+    IJVProposal proposal = _proposal();
+    vm.startPrank(alice);
+    token.approve(address(proposal), 100_000 ether);
+    proposal.deposit(token, 100_000 ether);
+    proposal.withdraw(token, 100_000 ether);
+
+    assertEq(proposal.userTokenDeposits(alice, token), 0);
+  }
+
+    function _printBalances(
     IJVProposal proposal,
     address[] memory uniPools,
     address[] memory arrakisVaults
@@ -71,6 +106,10 @@ contract JVProposalFactoryTest is DSTest, Setup {
       "proposal foo balance"
     );
     console.log(
+      IERC20(daoConfigs[1].tokenAddress).balanceOf(address(proposal)),
+      "proposal bar balance"
+    );
+    console.log(
       IERC20(jvToken).balanceOf(address(uniPools[0])),
       "unipool0 jv balance"
     );
@@ -78,7 +117,6 @@ contract JVProposalFactoryTest is DSTest, Setup {
       IERC20(daoConfigs[0].tokenAddress).balanceOf(address(uniPools[0])),
       "unipool0 foo balance"
     );
-
 
     console.log(
       IERC20(jvToken).balanceOf(address(uniPools[1])),
@@ -115,38 +153,5 @@ contract JVProposalFactoryTest is DSTest, Setup {
       IERC20(jvToken).balanceOf(address(arrakisVaults[1])),
       "arrakisVault1 jv balance"
     );
-  }
-
-  function _depositTargetAmounts(IJVProposal proposal) internal {
-    IERC20 token0 = IERC20(address(tokens[0]));
-    IERC20 token1 = IERC20(address(tokens[1]));
-    vm.startPrank(alice);
-    token0.approve(address(proposal), 100_000 ether);
-    token1.approve(address(proposal), 100_000 ether);
-    proposal.deposit(token0, 100_000 ether);
-    proposal.deposit(token1, 100_000 ether);
-  }
-
-  function test_deposit() public {
-    IERC20 token = IERC20(address(tokens[0]));
-    IJVProposal proposal = _proposal();
-    vm.startPrank(alice);
-    token.approve(address(proposal), 100_000 ether);
-    proposal.deposit(token, 100_000 ether);
-
-    assertEq(proposal.userTokenDeposits(alice, token), 100_000 ether);
-    assertEq(proposal.totalDeposits(address(token)), 100_000 ether);
-    assertEq(token.balanceOf(address(proposal)), 100_000 ether);
-  }
-
-  function test_withdraw() public {
-    IERC20 token = IERC20(address(tokens[0]));
-    IJVProposal proposal = _proposal();
-    vm.startPrank(alice);
-    token.approve(address(proposal), 100_000 ether);
-    proposal.deposit(token, 100_000 ether);
-    proposal.withdraw(token, 100_000 ether);
-
-    assertEq(proposal.userTokenDeposits(alice, token), 0);
   }
 }

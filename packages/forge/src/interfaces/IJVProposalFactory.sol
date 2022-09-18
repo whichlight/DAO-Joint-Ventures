@@ -4,11 +4,10 @@ import "./IJVProposal.sol";
 
 interface IJVProposalFactory {
   struct DaoConfig {
-    uint256 index;
     address treasuryAddress;
     address tokenAddress;
     uint256 tokenDepositTarget;
-    uint256 treasurySplit; // % minted supply to transfer to treasury
+    uint256 treasurySplit; // % of remaining minted jv token supply to transfer to treasury after liquidity is deployed to exchanges
     uint256 poolSplit; // % of minted supply to use for pool liquidity
     uint256 mintSplit; // % of dao tokens to use for minting
   }

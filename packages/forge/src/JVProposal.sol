@@ -100,7 +100,9 @@ contract JVProposal is IJVProposal {
     uint256 tokenCount = daoTokenConfigs.length;
     address[] memory vaults = new address[](tokenCount);
     address[] memory pools = new address[](tokenCount);
+    
     for (uint256 i; i < tokenCount; i++) {
+
       address pool = IUniswapV3Factory(UNISWAP_FACTORY).createPool(
         address(jvToken),
         daoTokenConfigs[i].tokenAddress,

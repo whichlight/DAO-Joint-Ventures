@@ -60,8 +60,8 @@ export const useNewTokenInfo = () => {
     handleSplit2Change,
     handleTokenNameChange,
     handleTokenSymbolChange,
-    dao1MintSplit,
-    dao2MintSplit,
+    dao1MintSplit: split1,
+    dao2MintSplit: split2,
     tokenName,
     tokenSymbol,
   };
